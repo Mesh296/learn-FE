@@ -19,6 +19,7 @@ function App() {
     lat: null,
     lng: null
   });
+  const [country, setCountry] = useState("")
 
   const handleSelect = async (value, placeId) => {
     const result = await geocodeByAddress(value);
@@ -30,8 +31,11 @@ function App() {
     const [place] = await geocodeByPlaceId(placeId);
     const { long_name: postalCode = '' } =
     place.address_components.find(c => c.types.includes('postal_code')) || {};
-    console.log(placeId);
     setPostal_code(postalCode);
+
+    const { long_name: contr = ''} = result[0].address_components.find(c => c.types.includes('country')) || {};
+    setCountry(contr);
+    console.log(result[0].address_components);
 
    }
 
@@ -70,7 +74,7 @@ function App() {
                   })}
                   onClick={() => handleSelect(suggestion.description, suggestion.placeId)}
                   >
-                    {console.log(suggestion.placeId)}
+                    {/* {console.log(suggestion.placeId)} */}
                     {suggestion.description}
                   </div>
                 );
@@ -81,7 +85,7 @@ function App() {
             <div>Longitude: {coordinates["lng"]}</div>
             <div>Address: {searchedadd}</div>
             <div>Postal Code: {postal_code}</div>
-
+            <div>Country: {country}</div>
           </div>
         )}
       </PlacesAutocomplete>
