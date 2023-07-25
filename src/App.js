@@ -13,18 +13,25 @@ import PlacesAutocomplete,
 function App() {
 
   const [address, setAddress] = useState("")
-
+  const [postal_code, setPostal_code] = useState("")
+  const [searchedadd, setSearchedadd] = useState("")
   const [coordinates, setCoordinates] = useState({
     lat: null,
     lng: null
   });
 
-  const handleSelect = async value => {
+  const handleSelect = async (value, placeId) => {
     const result = await geocodeByAddress(value);
     const latlong = await getLatLng(result[0])
     setAddress(value);
+    setSearchedadd(value);
     setCoordinates(latlong);
-    console.log(value.description.regi);
+    
+    const [place] = await geocodeByPlaceId(placeId);
+    const { long_name: postalCode = '' } =
+    place.address_components.find(c => c.types.includes('postal_code')) || {};
+    console.log(placeId);
+    setPostal_code(postalCode);
 
    }
 
@@ -61,8 +68,9 @@ function App() {
                     className,
                     style,
                   })}
-                  onClick={() => handleSelect(suggestion.description)}
+                  onClick={() => handleSelect(suggestion.description, suggestion.placeId)}
                   >
+                    {console.log(suggestion.placeId)}
                     {suggestion.description}
                   </div>
                 );
@@ -71,6 +79,9 @@ function App() {
             <div>--------------------------</div>
             <div>Latitude: {coordinates["lat"]}</div>
             <div>Longitude: {coordinates["lng"]}</div>
+            <div>Address: {searchedadd}</div>
+            <div>Postal Code: {postal_code}</div>
+
           </div>
         )}
       </PlacesAutocomplete>
